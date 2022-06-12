@@ -35,4 +35,39 @@ class ThreadPoolTaskTest {
 
         assertTrue(threadPool.isShutdown());
     }
+
+
+    @Test
+    public void cashedThreadPoolWith50ThreadsTest() throws InterruptedException {
+
+        final ThreadPoolExecutor cachedThreadPool =
+                (ThreadPoolExecutor) Executors.newCachedThreadPool();
+
+        final int threadsCount = 50;
+
+        for (int i = 0; i < threadsCount; i++) {
+            final Thread thread = new ThreadPoolTask(String.format("ThreadNumber %d  ", i), 10000);
+            cachedThreadPool.submit(thread);
+        }
+
+        while (cachedThreadPool.getActiveCount() != 0) {
+            System.out.println("threads still in process...");
+            Thread.sleep(5000);
+        }
+
+        //reuse the 50 threads from the cached thread pool
+        for (int i = 0; i < threadsCount; i++) {
+            final Thread thread = new ThreadPoolTask(String.format("ThreadNumber %d  ", i), 10000);
+            cachedThreadPool.submit(thread);
+        }
+
+        while (cachedThreadPool.getActiveCount() != 0) {
+            System.out.println("second time cached threads still in process...");
+            Thread.sleep(5000);
+        }
+
+        //we are expecting the pool to still have 50 threads
+        assertEquals(50, cachedThreadPool.getPoolSize());
+        assertEquals(0, cachedThreadPool.getActiveCount());
+    }
 }
