@@ -69,5 +69,7 @@ class ThreadPoolTaskTest {
         //we are expecting the pool to still have 50 threads
         assertEquals(50, cachedThreadPool.getPoolSize());
         assertEquals(0, cachedThreadPool.getActiveCount());
+        
+        cachedThreadPool.shutdown();
     }
 }
